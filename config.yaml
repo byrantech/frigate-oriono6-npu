@@ -1,0 +1,52 @@
+# --- GLOBAL FFMPEG SETTINGS ---
+ffmpeg:
+  path: /usr/lib/custom_ffmpeg
+  hwaccel_args:
+    - -hwaccel
+    - drm
+    - -hwaccel_device
+    - /dev/dri/renderD128
+
+# Frigate reads this to set up the hardware video pipeline correctly
+model:
+  path: /config/model_cache/oriono6/yolox_m.cix
+  width: 640
+  height: 640
+  input_tensor: nhwc
+  input_pixel_format: bgr
+  input_dtype: int # Metadata only, we handle float conversion in script
+
+detectors:
+  orion:
+    type: oriono6
+
+cameras:
+  LivingRoom:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://PLACEHOLDER:RTSP_STREAM@192.168.X.X
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 1920
+      height: 1080
+      fps: 5
+
+    motion:
+      threshold: 30
+      contour_area: 10
+      improve_contrast: true
+objects:
+  track:
+    - person
+    - car
+    - chair
+    - tv
+
+detect:
+  enabled: true
+  fps: 5
+version: 0.16-0

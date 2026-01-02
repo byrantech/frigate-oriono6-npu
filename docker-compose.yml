@@ -1,0 +1,44 @@
+services:
+  frigate:
+    container_name: frigate
+    privileged: true # Required for hardware access
+    restart: unless-stopped
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: "128mb" # Recommended for multiple cameras
+
+    # CRITICAL: Tell Frigate to check the custom Radxa folders for libraries
+    environment:
+      - LD_LIBRARY_PATH=/opt/cixgpu-compat/lib/aarch64-linux-gnu:/opt/cixgpu-pro/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:/usr/local/lib
+
+    ports:
+      - "8971:8971"
+      - "8554:8554" # RTSP feeds
+      - "8555:8555/tcp" # WebRTC
+      - "8555:8555/udp" # WebRTC
+
+    volumes:
+      # --- Config & Storage ---
+      - ./config:/config
+      - ./storage:/media/frigate
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+
+      # --- HARDWARE TRANSPLANT ---
+      - /usr/bin/ffmpeg:/usr/lib/custom_ffmpeg/bin/ffmpeg:ro
+      - /usr/bin/ffprobe:/usr/lib/custom_ffmpeg/bin/ffprobe:ro
+      - /lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:ro
+      - /usr/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:ro
+      - /opt/cixgpu-compat:/opt/cixgpu-compat:ro
+      - /opt/cixgpu-pro:/opt/cixgpu-pro:ro
+
+      # --- PLUGIN & SDK MOUNTS ---
+      # 1. Map your custom plugin folder
+      - ./plugins/detectors/oriono6.py:/opt/frigate/frigate/detectors/plugins/oriono6.py
+
+      # 2. Map the Radxa AI Hub Code (so we can import 'utils')
+      - /home/radxa/Downloads/ai_model_hub_25_Q3:/opt/radxa_ai_hub:ro
+
+      # 3. Map the Venv Libraries (so we can import 'libnoe')
+      - /home/radxa/Downloads/ai_model_hub_25_Q3/venv/lib/python3.11/site-packages:/opt/radxa_venv:ro
