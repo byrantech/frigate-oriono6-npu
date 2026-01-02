@@ -2,9 +2,8 @@
 
 This guide details how to leverage the Orion O6's NPU (Neural Processing Unit) for hardware-accelerated object detection in Frigate. By offloading detection to the NPU, you can process high-resolution streams with minimal CPU usage.
 
-*Photo by [Shir Danieli](https://www.pexels.com/photo/urban-street-scene-with-pedestrians-and-building-35465130/), modified to look "security camera-ish"*
-
-![](./npu_sample.jpg)
+![](imgs/npu_sample.jpg)
+> *Photo by [Shir Danieli](https://www.pexels.com/photo/urban-street-scene-with-pedestrians-and-building-35465130/), modified to look "security camera-ish"*
 
 ---
 
@@ -51,6 +50,7 @@ Test that the NPU is working by running a sample inference script directly on th
 python3 inference_npu.py
 
 ```
+If you have problems with `libnoe` or similar Cix specific dependencies, run `install-local-npu-dependencies.sh` located in the repo. You can also search for them manually with `find -name`.
 
 ---
 
@@ -214,8 +214,8 @@ The Orion O6 is capable of impressive performance. Using `yolox_m.cix` on a 1080
 
 The docker compose also sets up an `ffmpeg` hardware transplant to enable hardware encoding such that it will use `ffmpeg version 5.1.6-0+deb12u1+cix` instead of the default ffmpeg installation.
 
-![Detection](detection_overview.png)
+![Detection](imgs/detection_overview.png)
 
-![Inference](detector_inference_speed.png)
+![Inference](imgs/detector_inference_speed.png)
 
-![Stats](detector_stats.png)
+![Stats](imgs/detector_stats.png)
